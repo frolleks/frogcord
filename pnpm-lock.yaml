@@ -9,8 +9,8 @@ devDependencies:
     specifier: ^20.10.5
     version: 20.10.5
   electron:
-    specifier: ^28.1.0
-    version: 28.1.0
+    specifier: ^22.3.27
+    version: 22.3.27
   esbuild:
     specifier: ^0.19.10
     version: 0.19.10
@@ -275,10 +275,8 @@ packages:
       '@types/node': 20.10.5
     dev: true
 
-  /@types/node@18.19.3:
-    resolution: {integrity: sha512-k5fggr14DwAytoA/t8rPrIz++lXK7/DqckthCmoZOKNsEbJkId4Z//BqgApXBUGrGddrigYa1oqheo/7YmW4rg==}
-    dependencies:
-      undici-types: 5.26.5
+  /@types/node@16.18.68:
+    resolution: {integrity: sha512-sG3hPIQwJLoewrN7cr0dwEy+yF5nD4D/4FxtQpFciRD/xwUzgD+G05uxZHv5mhfXo4F9Jkp13jjn0CC2q325sg==}
     dev: true
 
   /@types/node@20.10.5:
@@ -387,14 +385,14 @@ packages:
     dev: true
     optional: true
 
-  /electron@28.1.0:
-    resolution: {integrity: sha512-82Y7o4PSWPn1o/aVwYPsgmBw6Gyf2lVHpaBu3Ef8LrLWXxytg7ZRZr/RtDqEMOzQp3+mcuy3huH84MyjdmP50Q==}
+  /electron@22.3.27:
+    resolution: {integrity: sha512-7Rht21vHqj4ZFRnKuZdFqZFsvMBCmDqmjetiMqPtF+TmTBiGne1mnstVXOA/SRGhN2Qy5gY5bznJKpiqogjM8A==}
     engines: {node: '>= 12.20.55'}
     hasBin: true
     requiresBuild: true
     dependencies:
       '@electron/get': 2.0.3
-      '@types/node': 18.19.3
+      '@types/node': 16.18.68
       extract-zip: 2.0.1
     transitivePeerDependencies:
       - supports-color
