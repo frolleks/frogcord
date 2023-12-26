@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "build": "rimraf dist && node build.mjs",
-    "inject": "node scripts/installer.js"
+    "inject": "pnpm build && node scripts/installer.js"
   },
   "devDependencies": {
     "@frolleks/standalone-electron-types": "^22.3.27",
