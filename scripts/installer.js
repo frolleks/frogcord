@@ -9,6 +9,7 @@ const windowsDiscordPaths = {
 function installFrogcord() {
   const resourcesPath = path.join(windowsDiscordPaths.stable, "resources");
   const appPath = path.join(resourcesPath, "app.asar");
+  const newAppPath = path.join(resourcesPath, "_app.asar");
 
   exec("taskkill /f /im discord.exe", (error, stdout, stderr) => {
     if (error) {
@@ -23,8 +24,10 @@ function installFrogcord() {
   });
 
   if (fs.existsSync(appPath)) {
-    fs.renameSync(appPath, "_app.asar");
+    fs.renameSync(appPath, newAppPath);
     fs.mkdirSync(appPath, { recursive: true });
+  } else if (fs.existsSync(newAppPath)) {
+    console.log("Successfully reinjected.");
   }
 
   // Read and write files synchronously
