@@ -10,6 +10,24 @@ The only Discord client modification that you need.
 
 - [ ] Reimplement BetterDiscord, Replugged, and Vencord's plugin API
 
+## Installation
+
+This guide assumes you already have Git, Node.js, and pnpm installed, and running Windows (although support for more platforms are coming out soon, and feel free to open up a pull request adding support for more platforms).
+
+1. Clone the repository
+
+```
+git clone https://github.com/frolleks/frogcord && cd frogcord
+```
+
+2. Inject to Discord client
+
+```
+pnpm run inject
+```
+
+It will tell you to choose which version of the client you want to inject. Simply type a number, and it'll inject it for you.
+
 ## License
 
 ```
