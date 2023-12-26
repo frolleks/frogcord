@@ -1,8 +1,8 @@
 #!/usr/bin/node
 
 /*!
- * Vencord, a modification for Discord's desktop app
- * Copyright (c) 2022 Vendicated and contributors
+ * The only Discord client modification you need.
+ * Copyright (c) 2023 Frolleks
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
