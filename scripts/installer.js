@@ -6,6 +6,21 @@ const windowsDiscordPaths = {
   stable: "C:/Users/Frolleks/AppData/Local/Discord/app-1.0.9028",
 };
 
+function isDiscordRunning(callback) {
+  exec("tasklist", (err, stdout, stderr) => {
+    if (err || stderr) {
+      console.error("Error checking for Discord process:", err || stderr);
+      return callback(false);
+    }
+
+    if (stdout.includes("Discord.exe")) {
+      callback(true);
+    } else {
+      callback(false);
+    }
+  });
+}
+
 function installFrogcord() {
   const resourcesPath = path.join(windowsDiscordPaths.stable, "resources");
   const appPath = path.join(resourcesPath, "app.asar");
@@ -41,16 +56,22 @@ function installFrogcord() {
     '{\n  "name": "discord",\n  "main": "index.js"\n}'
   );
 
-  exec("taskkill /f /im discord.exe", (error, stdout, stderr) => {
-    if (error) {
-      console.error(`Error: ${error.message}`);
-      return;
+  isDiscordRunning((running) => {
+    if (running) {
+      exec("taskkill /f /im discord.exe", (error, stdout, stderr) => {
+        if (error) {
+          console.error(`Error: ${error.message}`);
+          return;
+        }
+        if (stderr) {
+          console.error(`Stderr: ${stderr}`);
+          return;
+        }
+        console.log("Please relaunch Discord.");
+      });
+    } else {
+      console.log("Please open Discord.");
     }
-    if (stderr) {
-      console.error(`Stderr: ${stderr}`);
-      return;
-    }
-    console.log("Please relaunch Discord.");
   });
 }
 
