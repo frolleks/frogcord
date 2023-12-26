@@ -104,28 +104,37 @@ const gitHashPlugin = {
   },
 };
 
+const commonOpts = {
+  bundle: true,
+  target: ["esnext"],
+  sourcemap: "linked",
+  tsconfig: "./tsconfig.json",
+  plugins: [makeAllPackagesExternalPlugin],
+};
+
+const nodeCommonOpts = {
+  ...commonOpts,
+  format: "cjs",
+  platform: "node",
+};
+
 const begin = performance.now();
 await Promise.allSettled([
   esbuild.build({
     entryPoints: ["src/preload.ts"],
     outfile: "dist/preload.js",
-    format: "cjs",
-    bundle: true,
-    platform: "node",
-    target: ["esnext"],
-    sourcemap: "linked",
-    plugins: [makeAllPackagesExternalPlugin],
+    ...nodeCommonOpts,
   }),
   esbuild.build({
     entryPoints: ["src/patcher.ts"],
     outfile: "dist/patcher.js",
-    bundle: true,
-    format: "cjs",
-    target: ["esnext"],
-    external: ["electron"],
-    platform: "node",
-    sourcemap: "linked",
-    plugins: [makeAllPackagesExternalPlugin],
+    ...nodeCommonOpts,
+  }),
+  esbuild.build({
+    entryPoints: ["src/renderer.ts"],
+    outfile: "dist/renderer.js",
+    format: "iife",
+    ...commonOpts,
   }),
 ])
   .then((res) => {
