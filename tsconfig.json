@@ -6,12 +6,15 @@
     "strict": true,
     "noImplicitAny": false,
     "jsx": "preserve",
-    "baseUrl": "./src/",
+    "baseUrl": ".",
     "checkJs": true,
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
     "esModuleInterop": true,
-    "skipLibCheck": true
+    "skipLibCheck": true,
+    "paths": {
+      "@frogcord/*": ["./src/*"]
+    }
   },
   "include": ["src/**/*"]
 }
