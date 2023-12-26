@@ -1,58 +1,63 @@
-import electron, { type BrowserWindowConstructorOptions } from "electron";
+import electron, {
+  app,
+  BrowserWindow,
+  session,
+  type BrowserWindowConstructorOptions,
+} from "electron";
 import path from "path";
-import Module from "module";
+import { onceDefined } from "./utils/onceDefined";
 
-class BrowserWindow extends electron.BrowserWindow {
+const injectorPath = require.main!.filename;
+
+// special discord_arch_electron injection method
+const asarName = require.main!.path.endsWith("app.asar")
+  ? "_app.asar"
+  : "app.asar";
+
+// The original app.asar
+const asarPath = path.join(path.dirname(injectorPath), "..", asarName);
+
+const discordPkg = require(path.join(asarPath, "package.json"));
+require.main!.filename = path.join(asarPath, discordPkg.main);
+
+// @ts-ignore
+app.setAppPath(asarPath);
+
+export default class PatchedBrowserWindow extends BrowserWindow {
   constructor(options: BrowserWindowConstructorOptions) {
-    if (options?.webPreferences?.preload && options.title) {
-      const original = options.webPreferences.preload;
+    if (options.webPreferences && options.webPreferences.preload) {
+      const originalPreload = options.webPreferences.preload;
       options.webPreferences.preload = path.join(__dirname, "preload.js");
       options.webPreferences.sandbox = false;
 
-      process.env.DISCORD_PRELOAD = original;
-
-      super(options);
-    } else super(options);
+      process.env.DISCORD_PRELOAD = originalPreload;
+    }
+    super(options);
   }
 }
 
-Object.assign(BrowserWindow, electron.BrowserWindow);
-
-Object.defineProperty(BrowserWindow, "name", {
+Object.assign(PatchedBrowserWindow, BrowserWindow);
+Object.defineProperty(PatchedBrowserWindow, "name", {
   value: "BrowserWindow",
   configurable: true,
 });
 
 const electronPath = require.resolve("electron");
-const discordAsar = path.join(
-  path.dirname(require.main!.filename),
-  "..",
-  "app.asar"
-);
-require.main!.filename = path.join(discordAsar, "index.js");
-
 delete require.cache[electronPath]!.exports;
 require.cache[electronPath]!.exports = {
   ...electron,
-  BrowserWindow,
+  PatchedBrowserWindow,
 };
 
-Object.defineProperty(global, "appSettings", {
-  set: (v: typeof global.appSettings) => {
-    v.set(
-      "DANGEROUS_ENABLE_DEVTOOLS_ONLY_ENABLE_IF_YOU_KNOW_WHAT_YOURE_DOING",
-      true
-    );
-    // @ts-ignore
-    delete global.appSettings;
-    global.appSettings = v;
-  },
-  configurable: true,
+onceDefined(global, "appSettings", (s) => {
+  s.set(
+    "DANGEROUS_ENABLE_DEVTOOLS_ONLY_ENABLE_IF_YOU_KNOW_WHAT_YOURE_DOING",
+    true
+  );
 });
 
-electron.app.whenReady().then(() => {
-  // Remove CSP
-  electron.session.defaultSession.webRequest.onHeadersReceived(
+app.whenReady().then(() => {
+  session.defaultSession.webRequest.onHeadersReceived(
     ({ responseHeaders, url }, cb) => {
       if (responseHeaders) {
         delete responseHeaders["content-security-policy-report-only"];
@@ -63,17 +68,10 @@ electron.app.whenReady().then(() => {
   );
 
   // Drop science and sentry requests
-  electron.session.defaultSession.webRequest.onBeforeRequest(
+  session.defaultSession.webRequest.onBeforeRequest(
     { urls: ["https://*/api/v*/science", "https://sentry.io/*"] },
     (_, callback) => callback({ cancel: true })
   );
 });
 
-const discPackage = require(path.join(discordAsar, "package.json"));
-// @ts-ignore - Hidden property
-electron.app.setAppPath(discPackage.name, discordAsar);
-electron.app.name = discPackage.name;
-
-console.log("Discord is loading...");
-// @ts-ignore
-Module._load(path.join(discordAsar, discPackage.main), null, true);
+require(require.main!.filename);
