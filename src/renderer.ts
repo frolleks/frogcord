@@ -1,1 +1,1 @@
-console.log("hey");
+window.frogcordAPI.sayHello();
